@@ -2,15 +2,29 @@
 
 namespace App\Http\Controllers;
 use App\Models\Todo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-
 class TodosController extends Controller
 {
     public function index() {
         $title = "Todos";
-        $data = [1, 2, 3, 4, 5];
-        // $data = Todo::all();
-        return view("todos.index", compact("title", "data"));
+        $data = Todo::all();
+        $formatted_time = function($value) {
+            return Carbon::parse($value)->format("d/m/Y H:i");
+        };
+        return view("todos.index", compact("title", "data", "formatted_time"));
+    }
+
+    public function detail($id) {
+        $title = "Detail Todo";
+        $data = Todo::find($id);
+        if(!$data) {
+            return redirect()->route("todos.index");
+        }
+        $formatted_time = function($value) {
+            return Carbon::parse($value)->format("d/m/Y H:i");
+        };
+        return view("todos.detail", compact("title", "data", "formatted_time"));
     }
 
     public function add() {
@@ -21,7 +35,7 @@ class TodosController extends Controller
     public function edit($id) {
         $title = "Edit Todo";
         $data = Todo::find($id);
-        return view("todos.edit", compact("title"));
+        return view("todos.edit", compact("title", "data"));
     }
 
     public function store(Request $request) {
@@ -46,9 +60,26 @@ class TodosController extends Controller
     }
     public function destroy($id) {
         Todo::where("id", $id)->delete();
-
+        
         return response()->json([
             "message" => "Todo has deleted"
+        ]);
+    }
+
+    public function done($id){
+        Todo::where("id", $id)->update([
+            "is_done" => true
+        ]);
+        return response()->json([
+            "message" => "Todo has done"
+        ]);
+    }
+    public function undone($id){
+        Todo::where("id", $id)->update([
+            "is_done" => false
+        ]);
+        return response()->json([
+            "message" => "Todo has undone"
         ]);
     }
 }

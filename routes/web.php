@@ -16,10 +16,15 @@ Route::middleware(["auth", "verified"])->group(function () {
     
     Route::prefix("todos")->controller(TodosController::class)->group(function() {
         Route::get("/", "index")->name("todos.index");
-        Route::get("add-todo", "add")->name("todos.add");
-        Route::get("/edit-todo", "add")->name("todos.edit");
+        Route::get("/add-todo", "add")->name("todos.add");
+        Route::get("/edit-todo/{id}", "edit")->name("todos.edit");
+        Route::get("/{id}", "detail")->name("todos.detail");
     
         Route::post("/", "store")->name("todos.store");
+        Route::put("/{id}", "update")->name("todos.update");
+        Route::patch("/{id}/done", "done")->name("todos.done");
+        Route::patch("/{id}/undone", "undone")->name("todos.undone");
+        Route::delete("/{id}", "destroy")->name("todos.destroy");
     });
 });
 
