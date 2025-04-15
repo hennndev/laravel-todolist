@@ -15,13 +15,17 @@
           {{ $todo->description }}
         </p>
         <div class="my-3 text-gray-300 flex flex-col space-y-2">
-          <p>Tasks: <span class="font-black">5 tasks</span></p>
+          <p>Tasks: <span class="font-black">{{ $todo->tasks->count() > 0 ? $todo->tasks->count() . " tasks" : "-" }}</span></p>
           <p>Start at: <span class="font-black">{{ $formatted_time($todo->start_time) }}</span></p>
           <p>End at: <span class="font-black">{{ $todo->end_time ? $formatted_time($todo->end_time) : "-" }}</span></p>
         </div>
         <a href="{{ route("todos.detail", $todo->id) }}" class="mt-auto bg-gray-300 hover:bg-gray-100 duration-200 text-[#222] py-2 px-4 rounded-md self-end">Detail</a>
       </article>
     @endforeach
+
+    @if ($data->isEmpty())
+      <p>Todos not available yet. Create new one now.</p>
+    @endif
   </section>
 </x-main-layout>
 

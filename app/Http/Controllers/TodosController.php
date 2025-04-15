@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Task;
 use App\Models\Todo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,7 +47,13 @@ class TodosController extends Controller
             "description" => "required|string|min:5",
             "start_time" => "required"
         ]);
-        Todo::create($validated_data);
+        Todo::create([
+            "name" => $validated_data["name"],
+            "category" => $validated_data["category"],
+            "description" => $validated_data["description"],
+            "start_time" => $validated_data["start_time"],
+            "end_time" => $request->end_time
+        ]);
         return redirect()->route("todos.index")->with("success", "New todo has successfully created");
     }
     public function update(Request $request, $id) {
@@ -70,12 +78,18 @@ class TodosController extends Controller
         Todo::where("id", $id)->update([
             "is_done" => true
         ]);
+        Task::where("todo_id", $id)->update([
+            "is_done" => true
+        ]);
         return response()->json([
             "message" => "Todo has done"
         ]);
     }
     public function undone($id){
         Todo::where("id", $id)->update([
+            "is_done" => false
+        ]);
+        Task::where("todo_id", $id)->update([
             "is_done" => false
         ]);
         return response()->json([
